@@ -32,12 +32,13 @@ const dimensionLabels: Record<string, string> = {
 };
 
 const ResultsView = ({ scores, answers, consultationReason }: ResultsViewProps) => {
-  const chartData = Object.entries(scores.dimensions || {}).map(([key, value]) => ({
+  // Vérifier si scores.dimensions existe avant de créer chartData
+  const chartData = scores?.dimensions ? Object.entries(scores.dimensions).map(([key, value]) => ({
     dimension: dimensionLabels[key] || key,
     score: value,
-  }));
+  })) : [];
 
-  const totalScore = scores.total;
+  const totalScore = scores?.total || 0;
   const maxPossibleScore = 18;
   const scorePercentage = Math.round((totalScore / maxPossibleScore) * 100);
 
@@ -50,7 +51,7 @@ const ResultsView = ({ scores, answers, consultationReason }: ResultsViewProps) 
 
         <div className="mb-8">
           <h3 className="text-xl font-semibold mb-4">Motif de consultation</h3>
-          <p className="text-gray-700">{consultationReason}</p>
+          <p className="text-gray-700">{consultationReason || "Non spécifié"}</p>
         </div>
 
         <Separator className="my-6" />
@@ -87,7 +88,7 @@ const ResultsView = ({ scores, answers, consultationReason }: ResultsViewProps) 
         <div className="mt-8">
           <h3 className="text-xl font-semibold mb-4">Détail des réponses</h3>
           <div className="space-y-4">
-            {Object.entries(answers || {}).map(([questionId, answer]) => {
+            {answers && Object.entries(answers).map(([questionId, answer]) => {
               const question = questions.find(q => q.id === questionId);
               const option = question?.options.find(opt => opt.value === answer);
               
@@ -107,7 +108,7 @@ const ResultsView = ({ scores, answers, consultationReason }: ResultsViewProps) 
         <div className="mt-8">
           <h3 className="text-xl font-semibold mb-4">Recommandations</h3>
           <div className="space-y-4">
-            {Object.entries(scores.dimensions || {}).map(([key, score]) => {
+            {scores?.dimensions && Object.entries(scores.dimensions).map(([key, score]) => {
               let recommendation = "";
               if (score <= 1) {
                 switch (key) {
