@@ -1,9 +1,11 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { Textarea } from "@/components/ui/textarea";
 
 interface QuestionOption {
   value: string;
@@ -20,62 +22,79 @@ interface Question {
 const questions: Question[] = [
   {
     id: "duration",
-    text: "Quelle est votre durée moyenne de sommeil par nuit ?",
+    text: "En moyenne, combien d'heures dormez-vous par nuit ?",
     options: [
-      { value: "less-6", label: "Moins de 6h", score: 0 },
-      { value: "6-7", label: "6-7h", score: 1 },
-      { value: "7-8", label: "7-8h", score: 2 },
-      { value: "more-8", label: "Plus de 8h", score: 1 },
+      { value: "less-6", label: "Moins de 6 heures", score: 0 },
+      { value: "6-7", label: "6 à 7 heures", score: 1 },
+      { value: "7-9", label: "7 à 9 heures", score: 2 },
+      { value: "9-10", label: "9 à 10 heures", score: 1 },
+      { value: "more-10", label: "Plus de 10 heures", score: 0 },
     ],
   },
   {
     id: "regularity",
-    text: "Vos horaires de sommeil sont-ils réguliers ?",
+    text: "Vos heures de coucher et de lever sont-elles régulières ?",
     options: [
-      { value: "very-irregular", label: "Très irréguliers", score: 0 },
-      { value: "somewhat-irregular", label: "Plutôt irréguliers", score: 1 },
-      { value: "somewhat-regular", label: "Plutôt réguliers", score: 2 },
-      { value: "very-regular", label: "Très réguliers", score: 3 },
+      { value: "very-regular", label: "Oui, très régulières (moins d'une heure de décalage)", score: 2 },
+      { value: "sometimes-irregular", label: "Parfois irrégulières", score: 1 },
+      { value: "often-irregular", label: "Souvent irrégulières", score: 0 },
     ],
   },
   {
     id: "chronotype",
-    text: "Quel est votre chronotype (préférence naturelle pour le matin ou le soir) ?",
+    text: "Vous considérez-vous comme étant plutôt une personne :",
     options: [
-      { value: "extreme-evening", label: "Extrême soir", score: 0 },
-      { value: "evening", label: "Soir", score: 1 },
-      { value: "morning", label: "Matin", score: 2 },
-      { value: "extreme-morning", label: "Extrême matin", score: 1 },
+      { value: "morning", label: "Du matin", score: 2 },
+      { value: "evening", label: "Du soir", score: 1 },
+      { value: "neutral", label: "Sans préférence", score: 2 },
     ],
   },
   {
     id: "insomnia",
-    text: "Souffrez-vous d'insomnie ?",
+    text: "Avez-vous des difficultés à vous endormir ou à rester endormi(e) ?",
     options: [
-      { value: "never", label: "Jamais", score: 3 },
-      { value: "rarely", label: "Rarement", score: 2 },
-      { value: "often", label: "Souvent", score: 1 },
-      { value: "very-often", label: "Très souvent", score: 0 },
+      { value: "none", label: "Aucunement", score: 2 },
+      { value: "slightly", label: "Légèrement", score: 1.5 },
+      { value: "moderately", label: "Moyennement", score: 1 },
+      { value: "much", label: "Beaucoup", score: 0.5 },
+      { value: "very-much", label: "Énormément", score: 0 },
+    ],
+  },
+  {
+    id: "satisfaction",
+    text: "Jusqu'à quel point êtes-vous SATISFAIT(E)/INSATISFAIT(E) de votre sommeil actuel ?",
+    options: [
+      { value: "very-satisfied", label: "Très satisfait", score: 2 },
+      { value: "satisfied", label: "Satisfait", score: 1.5 },
+      { value: "neutral", label: "Plutôt neutre", score: 1 },
+      { value: "unsatisfied", label: "Insatisfait", score: 0.5 },
+      { value: "very-unsatisfied", label: "Très insatisfait", score: 0 },
+    ],
+  },
+  {
+    id: "sleep-type",
+    text: "Quel est votre somnotype ?",
+    options: [
+      { value: "short", label: "Petite dormeuse", score: 1 },
+      { value: "long", label: "Longue dormeuse", score: 1 },
     ],
   },
   {
     id: "sleepiness",
-    text: "Ressentez-vous une somnolence diurne excessive ?",
+    text: "Ressentez-vous une somnolence ou une fatigue excessive pendant la journée, même après une nuit de sommeil ?",
     options: [
-      { value: "never", label: "Jamais", score: 3 },
-      { value: "rarely", label: "Rarement", score: 2 },
-      { value: "often", label: "Souvent", score: 1 },
-      { value: "very-often", label: "Très souvent", score: 0 },
+      { value: "frequently", label: "Oui, fréquemment", score: 0 },
+      { value: "sometimes", label: "Parfois", score: 1 },
+      { value: "rarely", label: "Rarement ou jamais", score: 2 },
     ],
   },
   {
     id: "apnea",
-    text: "Suspectez-vous des apnées du sommeil ?",
+    text: "Votre entourage a-t-il remarqué que vous ronflez fort, arrêtez de respirer ou bougez beaucoup pendant votre sommeil ?",
     options: [
-      { value: "no", label: "Non", score: 3 },
-      { value: "not-sure", label: "Je ne sais pas", score: 2 },
-      { value: "maybe", label: "Peut-être", score: 1 },
       { value: "yes", label: "Oui", score: 0 },
+      { value: "no", label: "Non", score: 2 },
+      { value: "unknown", label: "Je ne sais pas", score: 1 },
     ],
   },
 ];
@@ -86,6 +105,7 @@ interface SleepQuestionnaireProps {
 
 const SleepQuestionnaire = ({ onComplete }: SleepQuestionnaireProps) => {
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [consultationReason, setConsultationReason] = useState("");
   const { toast } = useToast();
 
   const handleAnswer = (questionId: string, value: string) => {
@@ -114,10 +134,10 @@ const SleepQuestionnaire = ({ onComplete }: SleepQuestionnaireProps) => {
   };
 
   const handleSubmit = () => {
-    if (Object.keys(answers).length < questions.length) {
+    if (Object.keys(answers).length < questions.length || !consultationReason.trim()) {
       toast({
         title: "Formulaire incomplet",
-        description: "Veuillez répondre à toutes les questions",
+        description: "Veuillez répondre à toutes les questions et indiquer le motif de consultation",
         variant: "destructive",
       });
       return;
@@ -126,6 +146,7 @@ const SleepQuestionnaire = ({ onComplete }: SleepQuestionnaireProps) => {
     const scores = calculateScores();
     const results = {
       answers,
+      consultationReason,
       scores,
       timestamp: new Date().toISOString(),
     };
@@ -157,6 +178,16 @@ const SleepQuestionnaire = ({ onComplete }: SleepQuestionnaireProps) => {
           </RadioGroup>
         </Card>
       ))}
+
+      <Card className="question-card">
+        <h2 className="text-xl font-semibold mb-4">Motif de la consultation</h2>
+        <Textarea
+          placeholder="Veuillez indiquer le motif de votre consultation..."
+          value={consultationReason}
+          onChange={(e) => setConsultationReason(e.target.value)}
+          className="min-h-[100px]"
+        />
+      </Card>
 
       <Button onClick={handleSubmit} className="w-full mt-6">
         Soumettre mes réponses
