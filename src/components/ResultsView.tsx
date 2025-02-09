@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import {
   RadarChart,
@@ -7,12 +8,15 @@ import {
   Radar,
   ResponsiveContainer,
 } from "recharts";
+import { Separator } from "@/components/ui/separator";
 
 interface ResultsViewProps {
   scores: {
     dimensions: Record<string, number>;
     total: number;
   };
+  answers: Record<string, string>;
+  consultationReason: string;
 }
 
 const dimensionLabels: Record<string, string> = {
@@ -20,26 +24,35 @@ const dimensionLabels: Record<string, string> = {
   regularity: "Régularité",
   chronotype: "Chronotype",
   insomnia: "Insomnie",
+  satisfaction: "Satisfaction",
+  "sleep-type": "Somnotype",
   sleepiness: "Somnolence",
   apnea: "Apnées",
 };
 
-const ResultsView = ({ scores }: ResultsViewProps) => {
+const ResultsView = ({ scores, answers, consultationReason }: ResultsViewProps) => {
   const chartData = Object.entries(scores.dimensions).map(([key, value]) => ({
-    dimension: dimensionLabels[key],
+    dimension: dimensionLabels[key] || key,
     score: value,
   }));
 
   const totalScore = scores.total;
-  const maxPossibleScore = 18; // 6 questions × score max de 3
+  const maxPossibleScore = 18;
   const scorePercentage = Math.round((totalScore / maxPossibleScore) * 100);
 
   return (
-    <div className="form-container">
+    <div className="form-container max-w-3xl mx-auto p-4 space-y-8">
       <Card className="p-8">
         <h2 className="text-2xl font-bold text-primary mb-6">
           Résultats de votre évaluation du sommeil
         </h2>
+
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold mb-4">Motif de consultation</h3>
+          <p className="text-gray-700">{consultationReason}</p>
+        </div>
+
+        <Separator className="my-6" />
 
         <div className="mb-8">
           <h3 className="text-xl font-semibold mb-2">Score global</h3>
@@ -66,6 +79,28 @@ const ResultsView = ({ scores }: ResultsViewProps) => {
               />
             </RadarChart>
           </ResponsiveContainer>
+        </div>
+
+        <Separator className="my-6" />
+
+        <div className="mt-8">
+          <h3 className="text-xl font-semibold mb-4">Détail des réponses</h3>
+          <div className="space-y-4">
+            {Object.entries(answers).map(([questionId, answer]) => {
+              const question = questions.find(q => q.id === questionId);
+              const option = question?.options.find(opt => opt.value === answer);
+              
+              if (question && option) {
+                return (
+                  <div key={questionId} className="p-4 bg-gray-50 rounded-lg">
+                    <p className="font-medium text-gray-900">{question.text}</p>
+                    <p className="text-gray-700 mt-1">Réponse : {option.label}</p>
+                  </div>
+                );
+              }
+              return null;
+            })}
+          </div>
         </div>
 
         <div className="mt-8">

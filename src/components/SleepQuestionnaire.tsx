@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -76,8 +75,8 @@ const questions: Question[] = [
     id: "sleep-type",
     text: "Quel est votre somnotype ?",
     options: [
-      { value: "short", label: "Petite dormeuse", score: 1 },
-      { value: "long", label: "Longue dormeuse", score: 1 },
+      { value: "short", label: "Petit dormeur", score: 1 },
+      { value: "long", label: "Long dormeur", score: 1 },
     ],
   },
   {
