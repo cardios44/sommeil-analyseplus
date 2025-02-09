@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Separator } from "@/components/ui/separator";
+import { questions } from "@/data/questions";
 
 interface ResultsViewProps {
   scores: {
@@ -31,7 +32,7 @@ const dimensionLabels: Record<string, string> = {
 };
 
 const ResultsView = ({ scores, answers, consultationReason }: ResultsViewProps) => {
-  const chartData = Object.entries(scores.dimensions).map(([key, value]) => ({
+  const chartData = Object.entries(scores.dimensions || {}).map(([key, value]) => ({
     dimension: dimensionLabels[key] || key,
     score: value,
   }));
@@ -86,7 +87,7 @@ const ResultsView = ({ scores, answers, consultationReason }: ResultsViewProps) 
         <div className="mt-8">
           <h3 className="text-xl font-semibold mb-4">Détail des réponses</h3>
           <div className="space-y-4">
-            {Object.entries(answers).map(([questionId, answer]) => {
+            {Object.entries(answers || {}).map(([questionId, answer]) => {
               const question = questions.find(q => q.id === questionId);
               const option = question?.options.find(opt => opt.value === answer);
               
@@ -106,7 +107,7 @@ const ResultsView = ({ scores, answers, consultationReason }: ResultsViewProps) 
         <div className="mt-8">
           <h3 className="text-xl font-semibold mb-4">Recommandations</h3>
           <div className="space-y-4">
-            {Object.entries(scores.dimensions).map(([key, score]) => {
+            {Object.entries(scores.dimensions || {}).map(([key, score]) => {
               let recommendation = "";
               if (score <= 1) {
                 switch (key) {

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import ConsentPage from "@/components/ConsentPage";
 import SleepQuestionnaire from "@/components/SleepQuestionnaire";
@@ -22,7 +23,13 @@ const Index = () => {
       {step === "questionnaire" && (
         <SleepQuestionnaire onComplete={handleQuestionnaireComplete} />
       )}
-      {step === "results" && <ResultsView scores={results.scores} />}
+      {step === "results" && (
+        <ResultsView 
+          scores={results.scores} 
+          answers={results.answers}
+          consultationReason={results.consultationReason}
+        />
+      )}
     </div>
   );
 };
