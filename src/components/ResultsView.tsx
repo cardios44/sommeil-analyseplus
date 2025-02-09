@@ -9,7 +9,11 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 import { questions } from "@/data/questions";
+import * as XLSX from 'xlsx';
+import { useToast } from "@/components/ui/use-toast";
 
 interface ResultsViewProps {
   scores: {
@@ -32,7 +36,8 @@ const dimensionLabels: Record<string, string> = {
 };
 
 const ResultsView = ({ scores, answers, consultationReason }: ResultsViewProps) => {
-  // Vérifier si scores.dimensions existe avant de créer chartData
+  const { toast } = useToast();
+  
   const chartData = scores?.dimensions ? Object.entries(scores.dimensions).map(([key, value]) => ({
     dimension: dimensionLabels[key] || key,
     score: value,
@@ -42,12 +47,72 @@ const ResultsView = ({ scores, answers, consultationReason }: ResultsViewProps) 
   const maxPossibleScore = 18;
   const scorePercentage = Math.round((totalScore / maxPossibleScore) * 100);
 
+  const exportToExcel = () => {
+    try {
+      // Création des données pour l'export
+      const exportData = {
+        'Informations Générales': [{
+          'Date': new Date().toLocaleDateString(),
+          'Motif de consultation': consultationReason || "Non spécifié",
+          'Score Total': `${totalScore}/${maxPossibleScore}`,
+          'Pourcentage': `${scorePercentage}%`
+        }],
+        'Scores par Dimension': Object.entries(scores?.dimensions || {}).map(([key, value]) => ({
+          'Dimension': dimensionLabels[key] || key,
+          'Score': value
+        })),
+        'Réponses Détaillées': Object.entries(answers || {}).map(([questionId, answer]) => {
+          const question = questions.find(q => q.id === questionId);
+          const option = question?.options.find(opt => opt.value === answer);
+          return {
+            'Question': question?.text || questionId,
+            'Réponse': option?.label || answer
+          };
+        })
+      };
+
+      // Création du classeur Excel
+      const wb = XLSX.utils.book_new();
+
+      // Ajout des feuilles
+      Object.entries(exportData).forEach(([sheetName, data]) => {
+        const ws = XLSX.utils.json_to_sheet(data);
+        XLSX.utils.book_append_sheet(wb, ws, sheetName);
+      });
+
+      // Génération et téléchargement du fichier
+      const date = new Date().toISOString().split('T')[0];
+      XLSX.writeFile(wb, `evaluation-sommeil-${date}.xlsx`);
+
+      toast({
+        title: "Export réussi",
+        description: "Le fichier Excel a été généré avec succès",
+      });
+    } catch (error) {
+      console.error('Erreur lors de l\'export:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'export",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="form-container max-w-3xl mx-auto p-4 space-y-8">
       <Card className="p-8">
-        <h2 className="text-2xl font-bold text-primary mb-6">
-          Résultats de votre évaluation du sommeil
-        </h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-primary">
+            Résultats de votre évaluation du sommeil
+          </h2>
+          <Button 
+            onClick={exportToExcel}
+            className="flex items-center gap-2"
+          >
+            <Download className="w-4 h-4" />
+            Exporter en Excel
+          </Button>
+        </div>
 
         <div className="mb-8">
           <h3 className="text-xl font-semibold mb-4">Motif de consultation</h3>
