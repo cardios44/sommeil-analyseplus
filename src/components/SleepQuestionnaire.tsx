@@ -6,6 +6,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
 
 interface QuestionOption {
   value: string;
@@ -155,31 +156,12 @@ const SleepQuestionnaire = ({ onComplete }: SleepQuestionnaireProps) => {
   };
 
   return (
-    <div className="form-container">
+    <div className="form-container max-w-3xl mx-auto space-y-8 p-4">
       <h1 className="text-3xl font-bold text-primary mb-6">
-        Questionnaire sur le Sommeil
+        Questionnaire de Consultation
       </h1>
 
-      {questions.map((question) => (
-        <Card key={question.id} className="question-card">
-          <h2 className="text-xl font-semibold mb-4">{question.text}</h2>
-          <RadioGroup
-            onValueChange={(value) => handleAnswer(question.id, value)}
-            value={answers[question.id]}
-          >
-            <div className="radio-group">
-              {question.options.map((option) => (
-                <div key={option.value} className="radio-option">
-                  <RadioGroupItem value={option.value} id={`${question.id}-${option.value}`} />
-                  <Label htmlFor={`${question.id}-${option.value}`}>{option.label}</Label>
-                </div>
-              ))}
-            </div>
-          </RadioGroup>
-        </Card>
-      ))}
-
-      <Card className="question-card">
+      <Card className="consultation-reason p-6 bg-primary/5">
         <h2 className="text-xl font-semibold mb-4">Motif de la consultation</h2>
         <Textarea
           placeholder="Veuillez indiquer le motif de votre consultation..."
@@ -189,7 +171,33 @@ const SleepQuestionnaire = ({ onComplete }: SleepQuestionnaireProps) => {
         />
       </Card>
 
-      <Button onClick={handleSubmit} className="w-full mt-6">
+      <div className="space-y-2">
+        <Separator className="my-8" />
+        <h2 className="text-2xl font-semibold mb-6">Questionnaire sur le Sommeil</h2>
+      </div>
+
+      <div className="space-y-6">
+        {questions.map((question) => (
+          <Card key={question.id} className="p-6">
+            <h3 className="text-xl font-semibold mb-4">{question.text}</h3>
+            <RadioGroup
+              onValueChange={(value) => handleAnswer(question.id, value)}
+              value={answers[question.id]}
+            >
+              <div className="grid gap-4">
+                {question.options.map((option) => (
+                  <div key={option.value} className="flex items-center space-x-2">
+                    <RadioGroupItem value={option.value} id={`${question.id}-${option.value}`} />
+                    <Label htmlFor={`${question.id}-${option.value}`}>{option.label}</Label>
+                  </div>
+                ))}
+              </div>
+            </RadioGroup>
+          </Card>
+        ))}
+      </div>
+
+      <Button onClick={handleSubmit} className="w-full mt-8">
         Soumettre mes réponses
       </Button>
     </div>
