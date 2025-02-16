@@ -52,14 +52,4 @@ export const cardiologistQuestions: CardiologistQuestion[] = [
       { value: "valve", label: "Chirurgie valvulaire", score: 0 },
     ],
   },
-  {
-    id: "nyha-class",
-    text: "Classe NYHA",
-    options: [
-      { value: "class-1", label: "Classe I", score: 0 },
-      { value: "class-2", label: "Classe II", score: 0 },
-      { value: "class-3", label: "Classe III", score: 0 },
-      { value: "class-4", label: "Classe IV", score: 0 },
-    ],
-  },
 ];
