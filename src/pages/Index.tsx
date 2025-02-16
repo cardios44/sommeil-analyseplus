@@ -3,32 +3,126 @@ import { useState } from "react";
 import ConsentPage from "@/components/ConsentPage";
 import SleepQuestionnaire from "@/components/SleepQuestionnaire";
 import ResultsView from "@/components/ResultsView";
+import CardiologistForm from "@/components/CardiologistForm";
+import { Button } from "@/components/ui/button";
+import * as XLSX from 'xlsx';
+import { useToast } from "@/components/ui/use-toast";
+
+interface PatientData {
+  patientId: string;
+  cardiologistData?: any;
+  sleepData?: any;
+  timestamp: string;
+}
 
 const Index = () => {
-  const [step, setStep] = useState<"consent" | "questionnaire" | "results">("consent");
-  const [results, setResults] = useState<any>(null);
+  const [step, setStep] = useState<"consent" | "cardio" | "questionnaire" | "results">("consent");
+  const [currentPatientId, setCurrentPatientId] = useState<string>("");
+  const [patientDataList, setPatientDataList] = useState<PatientData[]>([]);
+  const [currentResults, setCurrentResults] = useState<any>(null);
+  const { toast } = useToast();
 
   const handleConsent = () => {
+    const newPatientId = `P${patientDataList.length + 1}`;
+    setCurrentPatientId(newPatientId);
+    setStep("cardio");
+  };
+
+  const handleCardiologistComplete = (cardiologistData: any) => {
+    setPatientDataList((prev) => [
+      ...prev,
+      {
+        patientId: currentPatientId,
+        cardiologistData,
+        timestamp: new Date().toISOString(),
+      },
+    ]);
     setStep("questionnaire");
   };
 
-  const handleQuestionnaireComplete = (questionnaireResults: any) => {
-    setResults(questionnaireResults);
+  const handleQuestionnaireComplete = (sleepData: any) => {
+    setCurrentResults(sleepData);
+    setPatientDataList((prev) =>
+      prev.map((p) =>
+        p.patientId === currentPatientId
+          ? { ...p, sleepData }
+          : p
+      )
+    );
     setStep("results");
+  };
+
+  const exportAllData = () => {
+    try {
+      const wb = XLSX.utils.book_new();
+
+      // Création d'une feuille avec toutes les données
+      const allData = patientDataList.map((patient) => ({
+        'ID Patient': patient.patientId,
+        'Date': new Date(patient.timestamp).toLocaleDateString(),
+        'Pathologie Cardiaque': patient.cardiologistData?.answers['cardiac-pathology'],
+        'Classe NYHA': patient.cardiologistData?.answers['nyha-class'],
+        'Notes Cardiologue': patient.cardiologistData?.notes,
+        'Score Sommeil Total': patient.sleepData?.scores?.total,
+        'Motif Consultation': patient.sleepData?.consultationReason,
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(allData);
+      XLSX.utils.book_append_sheet(wb, ws, 'Données Patients');
+
+      // Génération et téléchargement du fichier
+      XLSX.writeFile(wb, `données-patients-${new Date().toISOString().split('T')[0]}.xlsx`);
+
+      toast({
+        title: "Export réussi",
+        description: "Les données ont été exportées avec succès",
+      });
+    } catch (error) {
+      console.error('Erreur lors de l\'export:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'export",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
     <div className="min-h-screen bg-background py-8">
+      {patientDataList.length > 0 && (
+        <div className="max-w-3xl mx-auto mb-8 flex justify-end">
+          <Button onClick={exportAllData}>
+            Exporter toutes les données ({patientDataList.length} patients)
+          </Button>
+        </div>
+      )}
+
       {step === "consent" && <ConsentPage onAccept={handleConsent} />}
+      {step === "cardio" && (
+        <CardiologistForm
+          onComplete={handleCardiologistComplete}
+          patientId={currentPatientId}
+        />
+      )}
       {step === "questionnaire" && (
         <SleepQuestionnaire onComplete={handleQuestionnaireComplete} />
       )}
-      {step === "results" && (
-        <ResultsView 
-          scores={results.scores} 
-          answers={results.answers}
-          consultationReason={results.consultationReason}
-        />
+      {step === "results" && currentResults && (
+        <>
+          <ResultsView
+            scores={currentResults.scores}
+            answers={currentResults.answers}
+            consultationReason={currentResults.consultationReason}
+          />
+          <div className="max-w-3xl mx-auto mt-8">
+            <Button
+              onClick={() => setStep("consent")}
+              className="w-full"
+            >
+              Nouveau Patient
+            </Button>
+          </div>
+        </>
       )}
     </div>
   );
