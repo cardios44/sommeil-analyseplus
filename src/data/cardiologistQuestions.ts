@@ -23,6 +23,36 @@ export const cardiologistQuestions: CardiologistQuestion[] = [
     ],
   },
   {
+    id: "hta",
+    text: "Hypertension artérielle",
+    options: [
+      { value: "no-hta", label: "Pas d'HTA", score: 0 },
+      { value: "controlled-hta", label: "HTA contrôlée", score: 0 },
+      { value: "uncontrolled-hta", label: "HTA non contrôlée", score: 0 },
+      { value: "resistant-hta", label: "HTA résistante", score: 0 },
+    ],
+  },
+  {
+    id: "stroke",
+    text: "Antécédent d'AVC/AIT",
+    options: [
+      { value: "no-stroke", label: "Non", score: 0 },
+      { value: "tia", label: "AIT", score: 0 },
+      { value: "ischemic-stroke", label: "AVC ischémique", score: 0 },
+      { value: "hemorrhagic-stroke", label: "AVC hémorragique", score: 0 },
+    ],
+  },
+  {
+    id: "cardiac-history",
+    text: "Autres antécédents cardiovasculaires",
+    options: [
+      { value: "mi", label: "Infarctus du myocarde", score: 0 },
+      { value: "pci", label: "Angioplastie coronaire", score: 0 },
+      { value: "cabg", label: "Pontage aorto-coronarien", score: 0 },
+      { value: "valve", label: "Chirurgie valvulaire", score: 0 },
+    ],
+  },
+  {
     id: "nyha-class",
     text: "Classe NYHA",
     options: [
@@ -30,16 +60,6 @@ export const cardiologistQuestions: CardiologistQuestion[] = [
       { value: "class-2", label: "Classe II", score: 0 },
       { value: "class-3", label: "Classe III", score: 0 },
       { value: "class-4", label: "Classe IV", score: 0 },
-    ],
-  },
-  {
-    id: "treatment",
-    text: "Traitement actuel",
-    options: [
-      { value: "beta-blockers", label: "Bêtabloquants", score: 0 },
-      { value: "ace-inhibitors", label: "IEC/ARA2", score: 0 },
-      { value: "diuretics", label: "Diurétiques", score: 0 },
-      { value: "anticoagulants", label: "Anticoagulants", score: 0 },
     ],
   },
 ];
