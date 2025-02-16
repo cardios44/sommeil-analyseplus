@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import ConsentPage from "@/components/ConsentPage";
 import SleepQuestionnaire from "@/components/SleepQuestionnaire";
@@ -10,7 +9,21 @@ import { useToast } from "@/components/ui/use-toast";
 
 interface PatientData {
   patientId: string;
-  cardiologistData?: any;
+  cardiologistData?: {
+    basicInfo: {
+      firstName: string;
+      lastName: string;
+      birthDate: string;
+      gender: string;
+      height: number;
+      weight: number;
+      bmi: number;
+      consultationReason: string;
+    };
+    answers: Record<string, string[]>;
+    otherSymptoms?: string;
+    otherCardiovascular?: string;
+  };
   sleepData?: any;
   timestamp: string;
 }
@@ -56,33 +69,34 @@ const Index = () => {
     try {
       const wb = XLSX.utils.book_new();
 
-      // Création d'une feuille avec toutes les données
-      const allData = patientDataList.map((patient) => ({
-        'ID Patient': patient.patientId,
-        'Date': new Date(patient.timestamp).toLocaleDateString(),
-        'Nom': patient.cardiologistData?.basicInfo?.firstName,
-        'Prénom': patient.cardiologistData?.basicInfo?.lastName,
-        'Date de naissance': patient.cardiologistData?.basicInfo?.birthDate,
-        'Sexe': patient.cardiologistData?.basicInfo?.gender === 'male' ? 'Homme' : 'Femme',
-        'Taille (cm)': patient.cardiologistData?.basicInfo?.height,
-        'Poids (kg)': patient.cardiologistData?.basicInfo?.weight,
-        'IMC': patient.cardiologistData?.basicInfo?.bmi,
-        'Motif de consultation': patient.cardiologistData?.basicInfo?.consultationReason,
-        'Symptômes': Object.entries(patient.cardiologistData?.answers || {})
-          .find(([key]) => key === 'current-symptoms')?.[1]?.join(', ') || '',
-        'Autres symptômes': patient.cardiologistData?.otherSymptoms,
-        'Antécédents cardiovasculaires': Object.entries(patient.cardiologistData?.answers || {})
-          .find(([key]) => key === 'cardiovascular-history')?.[1]?.join(', ') || '',
-        'Autres antécédents': patient.cardiologistData?.otherCardiovascular,
-        'Facteurs de risque': Object.entries(patient.cardiologistData?.answers || {})
-          .find(([key]) => key === 'risk-factors')?.[1]?.join(', ') || '',
-        'Score Sommeil Total': patient.sleepData?.scores?.total,
-      }));
+      const allData = patientDataList.map((patient) => {
+        const currentSymptoms = patient.cardiologistData?.answers['current-symptoms'] || [];
+        const cardiovascularHistory = patient.cardiologistData?.answers['cardiovascular-history'] || [];
+        const riskFactors = patient.cardiologistData?.answers['risk-factors'] || [];
+
+        return {
+          'ID Patient': patient.patientId,
+          'Date': new Date(patient.timestamp).toLocaleDateString(),
+          'Nom': patient.cardiologistData?.basicInfo?.firstName,
+          'Prénom': patient.cardiologistData?.basicInfo?.lastName,
+          'Date de naissance': patient.cardiologistData?.basicInfo?.birthDate,
+          'Sexe': patient.cardiologistData?.basicInfo?.gender === 'male' ? 'Homme' : 'Femme',
+          'Taille (cm)': patient.cardiologistData?.basicInfo?.height,
+          'Poids (kg)': patient.cardiologistData?.basicInfo?.weight,
+          'IMC': patient.cardiologistData?.basicInfo?.bmi,
+          'Motif de consultation': patient.cardiologistData?.basicInfo?.consultationReason,
+          'Symptômes': currentSymptoms.join(', '),
+          'Autres symptômes': patient.cardiologistData?.otherSymptoms,
+          'Antécédents cardiovasculaires': cardiovascularHistory.join(', '),
+          'Autres antécédents': patient.cardiologistData?.otherCardiovascular,
+          'Facteurs de risque': riskFactors.join(', '),
+          'Score Sommeil Total': patient.sleepData?.scores?.total,
+        };
+      });
 
       const ws = XLSX.utils.json_to_sheet(allData);
       XLSX.utils.book_append_sheet(wb, ws, 'Données Patients');
 
-      // Génération et téléchargement du fichier
       XLSX.writeFile(wb, `données-patients-${new Date().toISOString().split('T')[0]}.xlsx`);
 
       toast({

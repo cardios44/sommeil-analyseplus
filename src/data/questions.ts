@@ -38,12 +38,23 @@ export const questions: Question[] = [
     options: [
       { value: "morning", label: "Du matin", score: 2 },
       { value: "evening", label: "Du soir", score: 1 },
-      { value: "neutral", label: "Sans préférence", score: 2 },
+      { value: "neither", label: "Ni l'un ni l'autre", score: 2 },
     ],
   },
   {
     id: "insomnia",
     text: "Avez-vous des difficultés à vous endormir ou à rester endormi(e) ?",
+    options: [
+      { value: "none", label: "Aucunement", score: 2 },
+      { value: "slightly", label: "Légèrement", score: 1.5 },
+      { value: "moderately", label: "Moyennement", score: 1 },
+      { value: "much", label: "Beaucoup", score: 0.5 },
+      { value: "very-much", label: "Énormément", score: 0 },
+    ],
+  },
+  {
+    id: "daily-impact",
+    text: "Jusqu'à quel point considérez-vous que vos difficultés de sommeil perturbent votre fonctionnement quotidien ?",
     options: [
       { value: "none", label: "Aucunement", score: 2 },
       { value: "slightly", label: "Légèrement", score: 1.5 },
@@ -65,24 +76,27 @@ export const questions: Question[] = [
   },
   {
     id: "sleep-type",
-    text: "Quel est votre somnotype ?",
+    text: "Somnotype",
     options: [
-      { value: "short", label: "Petit dormeur", score: 1 },
-      { value: "long", label: "Long dormeur", score: 1 },
+      { value: "short", label: "Petite dormeuse", score: 1 },
+      { value: "long", label: "Longue dormeuse", score: 1 },
+      { value: "neither", label: "Ni l'un ni l'autre", score: 1 },
     ],
   },
   {
-    id: "sleepiness",
-    text: "Ressentez-vous une somnolence ou une fatigue excessive pendant la journée, même après une nuit de sommeil ?",
+    id: "daytime-sleepiness",
+    text: "Vous sentez-vous somnolent(e) au cours de la journée ?",
     options: [
-      { value: "frequently", label: "Oui, fréquemment", score: 0 },
-      { value: "sometimes", label: "Parfois", score: 1 },
-      { value: "rarely", label: "Rarement ou jamais", score: 2 },
+      { value: "none", label: "Aucunement", score: 2 },
+      { value: "slightly", label: "Légèrement", score: 1.5 },
+      { value: "moderately", label: "Moyennement", score: 1 },
+      { value: "much", label: "Beaucoup", score: 0.5 },
+      { value: "very-much", label: "Énormément", score: 0 },
     ],
   },
   {
     id: "apnea",
-    text: "Votre entourage a-t-il remarqué que vous ronflez fort, arrêtez de respirer ou bougez beaucoup pendant votre sommeil ?",
+    text: "Votre entourage a-t-il remarqué que vous ronflez fort, arrêtez de respirer pendant votre sommeil ?",
     options: [
       { value: "yes", label: "Oui", score: 0 },
       { value: "no", label: "Non", score: 2 },
