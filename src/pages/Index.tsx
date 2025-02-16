@@ -60,11 +60,23 @@ const Index = () => {
       const allData = patientDataList.map((patient) => ({
         'ID Patient': patient.patientId,
         'Date': new Date(patient.timestamp).toLocaleDateString(),
-        'Pathologie Cardiaque': patient.cardiologistData?.answers['cardiac-pathology'],
-        'Classe NYHA': patient.cardiologistData?.answers['nyha-class'],
-        'Notes Cardiologue': patient.cardiologistData?.notes,
+        'Nom': patient.cardiologistData?.basicInfo?.firstName,
+        'Prénom': patient.cardiologistData?.basicInfo?.lastName,
+        'Date de naissance': patient.cardiologistData?.basicInfo?.birthDate,
+        'Sexe': patient.cardiologistData?.basicInfo?.gender === 'male' ? 'Homme' : 'Femme',
+        'Taille (cm)': patient.cardiologistData?.basicInfo?.height,
+        'Poids (kg)': patient.cardiologistData?.basicInfo?.weight,
+        'IMC': patient.cardiologistData?.basicInfo?.bmi,
+        'Motif de consultation': patient.cardiologistData?.basicInfo?.consultationReason,
+        'Symptômes': Object.entries(patient.cardiologistData?.answers || {})
+          .find(([key]) => key === 'current-symptoms')?.[1]?.join(', ') || '',
+        'Autres symptômes': patient.cardiologistData?.otherSymptoms,
+        'Antécédents cardiovasculaires': Object.entries(patient.cardiologistData?.answers || {})
+          .find(([key]) => key === 'cardiovascular-history')?.[1]?.join(', ') || '',
+        'Autres antécédents': patient.cardiologistData?.otherCardiovascular,
+        'Facteurs de risque': Object.entries(patient.cardiologistData?.answers || {})
+          .find(([key]) => key === 'risk-factors')?.[1]?.join(', ') || '',
         'Score Sommeil Total': patient.sleepData?.scores?.total,
-        'Motif Consultation': patient.sleepData?.consultationReason,
       }));
 
       const ws = XLSX.utils.json_to_sheet(allData);

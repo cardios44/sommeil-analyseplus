@@ -1,55 +1,62 @@
 
+export interface PatientBasicInfo {
+  firstName: string;
+  lastName: string;
+  birthDate: string;
+  gender: "male" | "female";
+  height: number;
+  weight: number;
+  bmi: number;
+  consultationReason: string;
+}
+
 export interface CardiologistQuestionOption {
   value: string;
   label: string;
-  score: number;
+  checked?: boolean;
 }
 
 export interface CardiologistQuestion {
   id: string;
   text: string;
+  type: "checkbox" | "text";
   options: CardiologistQuestionOption[];
 }
 
 export const cardiologistQuestions: CardiologistQuestion[] = [
   {
-    id: "cardiac-pathology",
-    text: "Pathologie cardiaque principale",
+    id: "current-symptoms",
+    text: "Symptômes actuels",
+    type: "checkbox",
     options: [
-      { value: "coronary", label: "Maladie coronarienne", score: 0 },
-      { value: "heart-failure", label: "Insuffisance cardiaque", score: 0 },
-      { value: "arrhythmia", label: "Trouble du rythme", score: 0 },
-      { value: "other", label: "Autre", score: 0 },
+      { value: "chest-pain", label: "Douleur thoracique" },
+      { value: "dyspnea", label: "Dyspnée" },
+      { value: "palpitations", label: "Palpitations" },
+      { value: "fatigue", label: "Fatigue" },
+      { value: "syncope", label: "Syncope" },
+      { value: "other", label: "Autre" },
     ],
   },
   {
-    id: "hta",
-    text: "Hypertension artérielle",
+    id: "cardiovascular-history",
+    text: "Antécédents cardiovasculaires",
+    type: "checkbox",
     options: [
-      { value: "no-hta", label: "Pas d'HTA", score: 0 },
-      { value: "controlled-hta", label: "HTA contrôlée", score: 0 },
-      { value: "uncontrolled-hta", label: "HTA non contrôlée", score: 0 },
-      { value: "resistant-hta", label: "HTA résistante", score: 0 },
+      { value: "ischemic", label: "Cardiopathie ischémique" },
+      { value: "stroke", label: "Accident vasculaire cérébral (AVC)" },
+      { value: "af", label: "Fibrillation atriale (FA)" },
+      { value: "heart-failure", label: "Insuffisance cardiaque" },
+      { value: "hta", label: "Hypertension artérielle (HTA)" },
+      { value: "other", label: "Autre" },
     ],
   },
   {
-    id: "stroke",
-    text: "Antécédent d'AVC/AIT",
+    id: "risk-factors",
+    text: "Facteurs de risque cardiovasculaire",
+    type: "checkbox",
     options: [
-      { value: "no-stroke", label: "Non", score: 0 },
-      { value: "tia", label: "AIT", score: 0 },
-      { value: "ischemic-stroke", label: "AVC ischémique", score: 0 },
-      { value: "hemorrhagic-stroke", label: "AVC hémorragique", score: 0 },
-    ],
-  },
-  {
-    id: "cardiac-history",
-    text: "Autres antécédents cardiovasculaires",
-    options: [
-      { value: "mi", label: "Infarctus du myocarde", score: 0 },
-      { value: "pci", label: "Angioplastie coronaire", score: 0 },
-      { value: "cabg", label: "Pontage aorto-coronarien", score: 0 },
-      { value: "valve", label: "Chirurgie valvulaire", score: 0 },
+      { value: "diabetes", label: "Diabète" },
+      { value: "smoking", label: "Tabagisme (actuel ou passé)" },
     ],
   },
 ];
