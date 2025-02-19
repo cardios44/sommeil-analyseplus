@@ -5,7 +5,6 @@ import { Card } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { questions } from "@/data/questions";
 
@@ -15,9 +14,22 @@ interface SleepQuestionnaireProps {
 
 const SleepQuestionnaire = ({ onComplete }: SleepQuestionnaireProps) => {
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [consultationReason, setConsultationReason] = useState("");
   const [startTime] = useState(new Date());
+  const [elapsedTime, setElapsedTime] = useState({ minutes: 0, seconds: 0 });
   const { toast } = useToast();
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date();
+      const durationInSeconds = Math.floor((now.getTime() - startTime.getTime()) / 1000);
+      setElapsedTime({
+        minutes: Math.floor(durationInSeconds / 60),
+        seconds: durationInSeconds % 60
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [startTime]);
 
   const handleAnswer = (questionId: string, value: string) => {
     setAnswers((prev) => ({
@@ -45,10 +57,10 @@ const SleepQuestionnaire = ({ onComplete }: SleepQuestionnaireProps) => {
   };
 
   const handleSubmit = () => {
-    if (Object.keys(answers).length < questions.length || !consultationReason.trim()) {
+    if (Object.keys(answers).length < questions.length) {
       toast({
         title: "Formulaire incomplet",
-        description: "Veuillez répondre à toutes les questions et indiquer le motif de consultation",
+        description: "Veuillez répondre à toutes les questions",
         variant: "destructive",
       });
       return;
@@ -62,7 +74,6 @@ const SleepQuestionnaire = ({ onComplete }: SleepQuestionnaireProps) => {
     const scores = calculateScores();
     const results = {
       answers,
-      consultationReason,
       scores,
       completionTime: {
         minutes,
@@ -82,24 +93,18 @@ const SleepQuestionnaire = ({ onComplete }: SleepQuestionnaireProps) => {
 
   return (
     <div className="form-container max-w-3xl mx-auto space-y-8 p-4">
-      <h1 className="text-3xl font-bold text-primary mb-6">
-        Questionnaire de Consultation
-      </h1>
-
-      <Card className="consultation-reason p-6 bg-primary/5">
-        <h2 className="text-xl font-semibold mb-4">Motif de la consultation</h2>
-        <Textarea
-          placeholder="Veuillez indiquer le motif de votre consultation..."
-          value={consultationReason}
-          onChange={(e) => setConsultationReason(e.target.value)}
-          className="min-h-[100px]"
-        />
-      </Card>
-
-      <div className="space-y-2">
-        <Separator className="my-8" />
-        <h2 className="text-2xl font-semibold mb-6">Questionnaire sur le Sommeil</h2>
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-primary">
+          Questionnaire Sommeil
+        </h1>
+        <Card className="p-4 bg-primary/5">
+          <span className="font-mono text-lg">
+            {String(elapsedTime.minutes).padStart(2, '0')}:{String(elapsedTime.seconds).padStart(2, '0')}
+          </span>
+        </Card>
       </div>
+
+      <Separator className="my-8" />
 
       <div className="space-y-6">
         {questions.map((question) => (
