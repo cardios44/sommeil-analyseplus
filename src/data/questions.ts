@@ -54,13 +54,13 @@ export const questions: Question[] = [
   },
   {
     id: "daily-impact",
-    text: "Jusqu'à quel point considérez-vous que vos difficultés de sommeil perturbent votre fonctionnement quotidien ?",
+    text: "Jusqu'à quel point considérez-vous que vos difficultés de sommeil perturbent votre fonctionnement quotidien (ex. : fatigue durant la journée, capacité à travailler/à effectuer les tâches quotidiennes à la maison, concentration, mémoire et/ou humeur) ?",
     options: [
-      { value: "none", label: "Aucunement", score: 2 },
-      { value: "slightly", label: "Légèrement", score: 1.5 },
-      { value: "moderately", label: "Moyennement", score: 1 },
-      { value: "much", label: "Beaucoup", score: 0.5 },
-      { value: "very-much", label: "Énormément", score: 0 },
+      { value: "none", label: "0 - Aucunement", score: 2 },
+      { value: "slightly", label: "1 - Légèrement", score: 1.5 },
+      { value: "moderately", label: "2 - Moyennement", score: 1 },
+      { value: "much", label: "3 - Beaucoup", score: 0.5 },
+      { value: "very-much", label: "4 - Énormément", score: 0 },
     ],
   },
   {
@@ -78,8 +78,8 @@ export const questions: Question[] = [
     id: "sleep-type",
     text: "Somnotype",
     options: [
-      { value: "short", label: "Petite dormeuse", score: 1 },
-      { value: "long", label: "Longue dormeuse", score: 1 },
+      { value: "short", label: "Petit(e) dormeur(se)", score: 1 },
+      { value: "long", label: "Long(ue) dormeur(se)", score: 1 },
       { value: "neither", label: "Ni l'un ni l'autre", score: 1 },
     ],
   },
