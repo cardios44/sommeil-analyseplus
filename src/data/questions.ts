@@ -1,4 +1,3 @@
-
 export interface QuestionOption {
   value: string;
   label: string;
@@ -38,7 +37,7 @@ export const questions: Question[] = [
     options: [
       { value: "morning", label: "Du matin", score: 2 },
       { value: "evening", label: "Du soir", score: 1 },
-      { value: "neither", label: "Ni l'un ni l'autre", score: 2 },
+      { value: "neutral", label: "Ni l'un ni l'autre", score: 2 },
     ],
   },
   {
